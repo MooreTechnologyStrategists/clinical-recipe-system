@@ -105,7 +105,7 @@ const GenerateRecipe = ({ apiUrl, pantryItems, healthProfile, onRecipeGenerated 
                     data-testid={`select-ingredient-${item.ingredient_name}-btn`}
                     className={`p-3 rounded-lg text-sm font-medium transition-all ${
                       selectedIngredients.includes(item.ingredient_name)
-                        ? 'bg-green-500 text-white border-2 border-green-600'
+                        ? 'bg-blue-600 text-white border-2 border-blue-700'
                         : 'bg-gray-100 text-gray-700 border-2 border-gray-300 hover:bg-gray-200'
                     }`}
                   >
