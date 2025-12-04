@@ -34,7 +34,7 @@ class Ingredient(BaseModel):
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
-    category: str  # vegetables, fruits, grains, proteins, dairy, spices, condiments, etc.
+    category: str
     
 class PantryItem(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -42,32 +42,61 @@ class PantryItem(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     ingredient_name: str
     quantity: Optional[str] = None
-    notes: Optional[str] = None  # "soft", "fresh", etc.
+    notes: Optional[str] = None
     added_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-class RecipeRequest(BaseModel):
-    pantry_items: List[str]  # List of ingredient names
-    dietary_preference: str  # vegan, vegetarian, pescatarian, flexitarian, carnivorous, plant-based, clean-eating
-    meal_type: Optional[str] = None  # breakfast, lunch, dinner, snack, dessert
-    servings: Optional[int] = 2
+class HealthProfile(BaseModel):
+    model_config = ConfigDict(extra="ignore")
     
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    conditions: List[str] = []  # hypertension, diabetes, kidney_disease, heart_disease, cancer, etc.
+    allergies: List[str] = []
+    dietary_restrictions: List[str] = []
+    age_range: Optional[str] = None
+    activity_level: Optional[str] = None
+    health_goals: List[str] = []
+    created_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class RecipeRequest(BaseModel):
+    pantry_items: List[str]
+    dietary_preference: str
+    meal_type: Optional[str] = None
+    servings: Optional[int] = 2
+    health_profile_id: Optional[str] = None
+    
+class NutritionalBenefits(BaseModel):
+    ingredient: str
+    benefits: List[str]
+    concerns: List[str]
+
+class HealthWarning(BaseModel):
+    category: str  # sodium, sugar, saturated_fat, etc.
+    level: str  # low, moderate, high, very_high
+    amount: str
+    general_guidance: str
+    condition_specific: dict  # {"hypertension": "guidance", "diabetes": "guidance"}
+
 class Recipe(BaseModel):
     model_config = ConfigDict(extra="ignore")
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str
     description: str
-    ingredients: List[dict]  # [{"item": "cucumber", "amount": "2 cups"}]
+    ingredients: List[dict]
     instructions: List[str]
     prep_time: str
     cook_time: str
     total_time: str
     servings: int
-    difficulty: str  # easy, medium, hard
+    difficulty: str
     dietary_tags: List[str]
     meal_type: str
-    nutritional_info: dict  # calories, protein, carbs, fat, fiber
-    additional_items_needed: List[str]  # Items not in pantry
+    nutritional_info: dict
+    additional_items_needed: List[str]
+    nutritional_benefits: List[dict]  # Benefits of key ingredients
+    health_warnings: List[dict]  # Warnings about sodium, sugar, etc.
+    condition_suitability: dict  # Suitability for specific health conditions
     created_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     is_favorite: bool = False
 
@@ -76,40 +105,58 @@ class RecipeRating(BaseModel):
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     recipe_id: str
-    rating: int  # 1-5
+    rating: int
     review: Optional[str] = None
     created_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 # ============= Helper Functions =============
 
-async def generate_recipe_with_ai(pantry_items: List[str], dietary_preference: str, meal_type: str, servings: int) -> dict:
-    """Generate a recipe using OpenAI GPT-5.1"""
+async def generate_recipe_with_ai(pantry_items: List[str], dietary_preference: str, meal_type: str, servings: int, health_profile: Optional[HealthProfile] = None) -> dict:
+    """Generate a recipe using OpenAI GPT-5.1 with health considerations"""
     
     api_key = os.environ.get('EMERGENT_LLM_KEY')
     if not api_key:
         raise HTTPException(status_code=500, detail="API key not configured")
     
+    # Build health context
+    health_context = ""
+    if health_profile and health_profile.conditions:
+        conditions_str = ", ".join(health_profile.conditions)
+        health_context = f"""
+
+IMPORTANT HEALTH CONSIDERATIONS:
+- User has the following health conditions: {conditions_str}
+- Recipe must be optimized for these conditions
+- Provide specific warnings and modifications for each condition
+- Flag any ingredients that may be contraindicated
+"""
+        if health_profile.allergies:
+            health_context += f"\n- User is allergic to: {', '.join(health_profile.allergies)}"
+        if health_profile.dietary_restrictions:
+            health_context += f"\n- Additional dietary restrictions: {', '.join(health_profile.dietary_restrictions)}"
+    
     # Create the prompt
-    prompt = f"""You are an expert chef and nutritionist. Create a detailed, delicious {dietary_preference} recipe for {meal_type}.
+    prompt = f"""You are a clinical nutritionist and expert chef. Create a detailed, health-focused {dietary_preference} recipe for {meal_type}.
 
 Available ingredients: {', '.join(pantry_items)}
+{health_context}
 
 Requirements:
 - Recipe must be {dietary_preference}
 - Suitable for {meal_type}
 - Serves {servings} people
-- Use as many of the available ingredients as possible
-- Specify which ingredients from the list you're using
-- List any additional common ingredients needed
-- Include detailed nutritional information (calories, protein, carbs, fat, fiber per serving)
-- Rate the difficulty level (easy/medium/hard)
-- Provide prep time, cook time, and total time
+- Use as many available ingredients as possible
+- Include comprehensive nutritional analysis
+- Provide detailed health benefits for key ingredients (especially herbs and spices)
+- Flag any health concerns or warnings
+- Include sodium content and warnings for various conditions
+- Assess suitability for common health conditions
 
 Return the recipe in this EXACT JSON format (no markdown, just pure JSON):
 {{
     "title": "Recipe Name",
-    "description": "Brief appetizing description",
+    "description": "Professional description focusing on nutritional value",
     "ingredients": [
         {{"item": "ingredient name", "amount": "quantity"}}
     ],
@@ -126,18 +173,53 @@ Return the recipe in this EXACT JSON format (no markdown, just pure JSON):
         "protein": "0g",
         "carbs": "0g",
         "fat": "0g",
-        "fiber": "0g"
+        "fiber": "0g",
+        "sodium": "0mg",
+        "sugar": "0g",
+        "saturated_fat": "0g",
+        "cholesterol": "0mg",
+        "potassium": "0mg"
+    }},
+    "nutritional_benefits": [
+        {{
+            "ingredient": "ingredient name",
+            "benefits": ["benefit 1", "benefit 2"],
+            "concerns": ["concern 1 if any"]
+        }}
+    ],
+    "health_warnings": [
+        {{
+            "category": "sodium/sugar/saturated_fat",
+            "level": "low/moderate/high/very_high",
+            "amount": "Xmg per serving",
+            "general_guidance": "General population guidance",
+            "condition_specific": {{
+                "hypertension": "Specific guidance for high blood pressure",
+                "diabetes": "Specific guidance for diabetes",
+                "kidney_disease": "Specific guidance for kidney disease",
+                "heart_disease": "Specific guidance for heart disease"
+            }}
+        }}
+    ],
+    "condition_suitability": {{
+        "hypertension": {{"suitable": true/false, "notes": "explanation"}},
+        "diabetes": {{"suitable": true/false, "notes": "explanation"}},
+        "kidney_disease": {{"suitable": true/false, "notes": "explanation"}},
+        "heart_disease": {{"suitable": true/false, "notes": "explanation"}},
+        "cancer_prevention": {{"suitable": true/false, "notes": "explanation"}}
     }},
     "ingredients_used_from_pantry": ["ingredient1", "ingredient2"],
     "additional_items_needed": ["item1", "item2"]
-}}"""
+}}
+
+Provide accurate, evidence-based nutritional information and health guidance."""
 
     try:
         # Initialize LLM chat
         chat = LlmChat(
             api_key=api_key,
             session_id=f"recipe-gen-{uuid.uuid4()}",
-            system_message="You are an expert chef and nutritionist specializing in creating delicious, healthy recipes."
+            system_message="You are a clinical nutritionist and expert chef specializing in evidence-based nutritional guidance and therapeutic diets."
         ).with_model("openai", "gpt-5.1")
         
         # Send message
@@ -146,10 +228,8 @@ Return the recipe in this EXACT JSON format (no markdown, just pure JSON):
         
         # Parse the JSON response
         import json
-        # Extract JSON from response (handle markdown code blocks if present)
         response_text = response.strip()
         if response_text.startswith("```"):
-            # Remove markdown code blocks
             response_text = response_text.split("```")[1]
             if response_text.startswith("json"):
                 response_text = response_text[4:]
@@ -325,7 +405,7 @@ async def initialize_ingredients():
 
 @api_router.get("/")
 async def root():
-    return {"message": "Smart Recipe Generator API"}
+    return {"message": "Nutritional Recipe Generator API"}
 
 
 # --- Ingredient Endpoints ---
@@ -357,7 +437,6 @@ async def get_pantry():
     """Get all items in user's pantry"""
     items = await db.pantry.find({}, {"_id": 0}).to_list(1000)
     
-    # Convert ISO string timestamps back to datetime objects
     for item in items:
         if isinstance(item.get('added_date'), str):
             item['added_date'] = datetime.fromisoformat(item['added_date'])
@@ -391,6 +470,40 @@ async def clear_pantry():
     return {"message": "Pantry cleared"}
 
 
+# --- Health Profile Endpoints ---
+
+@api_router.get("/health-profile", response_model=HealthProfile)
+async def get_health_profile():
+    """Get user's health profile"""
+    profile = await db.health_profiles.find_one({}, {"_id": 0})
+    if not profile:
+        # Return empty profile if none exists
+        return HealthProfile()
+    
+    if isinstance(profile.get('created_date'), str):
+        profile['created_date'] = datetime.fromisoformat(profile['created_date'])
+    if isinstance(profile.get('updated_date'), str):
+        profile['updated_date'] = datetime.fromisoformat(profile['updated_date'])
+    
+    return profile
+
+
+@api_router.post("/health-profile", response_model=HealthProfile)
+async def create_or_update_health_profile(profile: HealthProfile):
+    """Create or update health profile"""
+    # Delete existing profile
+    await db.health_profiles.delete_many({})
+    
+    # Create new profile
+    profile.updated_date = datetime.now(timezone.utc)
+    doc = profile.model_dump()
+    doc['created_date'] = doc['created_date'].isoformat()
+    doc['updated_date'] = doc['updated_date'].isoformat()
+    
+    await db.health_profiles.insert_one(doc)
+    return profile
+
+
 # --- Recipe Generation Endpoints ---
 
 @api_router.post("/recipes/generate", response_model=Recipe)
@@ -402,12 +515,33 @@ async def generate_recipe(request: RecipeRequest):
     
     meal_type = request.meal_type or "any meal"
     
+    # Get health profile if specified
+    health_profile = None
+    if request.health_profile_id:
+        profile_doc = await db.health_profiles.find_one({"id": request.health_profile_id}, {"_id": 0})
+        if profile_doc:
+            if isinstance(profile_doc.get('created_date'), str):
+                profile_doc['created_date'] = datetime.fromisoformat(profile_doc['created_date'])
+            if isinstance(profile_doc.get('updated_date'), str):
+                profile_doc['updated_date'] = datetime.fromisoformat(profile_doc['updated_date'])
+            health_profile = HealthProfile(**profile_doc)
+    else:
+        # Get default health profile
+        profile_doc = await db.health_profiles.find_one({}, {"_id": 0})
+        if profile_doc:
+            if isinstance(profile_doc.get('created_date'), str):
+                profile_doc['created_date'] = datetime.fromisoformat(profile_doc['created_date'])
+            if isinstance(profile_doc.get('updated_date'), str):
+                profile_doc['updated_date'] = datetime.fromisoformat(profile_doc['updated_date'])
+            health_profile = HealthProfile(**profile_doc)
+    
     # Generate recipe using AI
     recipe_data = await generate_recipe_with_ai(
         pantry_items=request.pantry_items,
         dietary_preference=request.dietary_preference,
         meal_type=meal_type,
-        servings=request.servings
+        servings=request.servings,
+        health_profile=health_profile
     )
     
     # Create Recipe object
@@ -424,7 +558,10 @@ async def generate_recipe(request: RecipeRequest):
         dietary_tags=recipe_data["dietary_tags"],
         meal_type=recipe_data["meal_type"],
         nutritional_info=recipe_data["nutritional_info"],
-        additional_items_needed=recipe_data.get("additional_items_needed", [])
+        additional_items_needed=recipe_data.get("additional_items_needed", []),
+        nutritional_benefits=recipe_data.get("nutritional_benefits", []),
+        health_warnings=recipe_data.get("health_warnings", []),
+        condition_suitability=recipe_data.get("condition_suitability", {})
     )
     
     # Save to database
@@ -444,7 +581,6 @@ async def get_all_recipes(favorites_only: bool = False):
     
     recipes = await db.recipes.find(query, {"_id": 0}).sort("created_date", -1).to_list(100)
     
-    # Convert ISO string timestamps back to datetime objects
     for recipe in recipes:
         if isinstance(recipe.get('created_date'), str):
             recipe['created_date'] = datetime.fromisoformat(recipe['created_date'])
@@ -504,7 +640,6 @@ async def get_recipe_ratings(recipe_id: str):
     """Get all ratings for a recipe"""
     ratings = await db.recipe_ratings.find({"recipe_id": recipe_id}, {"_id": 0}).to_list(100)
     
-    # Convert ISO string timestamps
     for rating in ratings:
         if isinstance(rating.get('created_date'), str):
             rating['created_date'] = datetime.fromisoformat(rating['created_date'])
