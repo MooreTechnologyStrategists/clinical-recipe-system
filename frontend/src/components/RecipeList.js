@@ -93,7 +93,7 @@ const RecipeList = ({ apiUrl, onViewRecipe }) => {
               <div
                 key={recipe.id}
                 data-testid={`recipe-card-${recipe.id}`}
-                className="recipe-card bg-white border-2 border-gray-200 rounded-lg overflow-hidden hover:border-green-400 cursor-pointer"
+                className="recipe-card bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-blue-400 hover:shadow-md cursor-pointer"
               >
                 <div className="p-5 space-y-3">
                   {/* Header with favorite button */}
