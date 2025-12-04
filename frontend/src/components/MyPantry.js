@@ -85,19 +85,19 @@ const MyPantry = ({ apiUrl, pantryItems, setPantryItems }) => {
     return matchesCategory && matchesSearch && notInPantry;
   });
 
-  const getCategoryIcon = (category) => {
-    const icons = {
-      vegetables: '🥬',
-      fruits: '🍎',
-      grains: '🍞',
-      proteins: '🥚',
-      dairy: '🧀',
-      nuts_seeds: '🥜',
-      spices: '🌶️',
-      condiments: '🧈',
-      canned: '🥫',
+  const getCategoryLabel = (category) => {
+    const labels = {
+      vegetables: 'Vegetables',
+      fruits: 'Fruits',
+      grains: 'Grains',
+      proteins: 'Proteins',
+      dairy: 'Dairy',
+      nuts_seeds: 'Nuts & Seeds',
+      spices: 'Spices & Herbs',
+      condiments: 'Condiments & Oils',
+      canned: 'Canned Goods',
     };
-    return icons[category] || '🍽️';
+    return labels[category] || category;
   };
 
   return (
