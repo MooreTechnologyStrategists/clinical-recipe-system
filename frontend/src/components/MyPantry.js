@@ -184,11 +184,11 @@ const MyPantry = ({ apiUrl, pantryItems, setPantryItems }) => {
                 data-testid={`category-${category}-btn`}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   selectedCategory === category
-                    ? 'bg-green-500 text-white'
+                    ? 'bg-blue-600 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                {getCategoryIcon(category)} {category.replace('_', ' ')}
+                {getCategoryLabel(category)}
               </button>
             ))}
           </div>
