@@ -153,7 +153,7 @@ const RecipeList = ({ apiUrl, onViewRecipe }) => {
                     <button
                       onClick={() => onViewRecipe(recipe)}
                       data-testid={`view-recipe-btn-${recipe.id}`}
-                      className="flex-1 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors"
+                      className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
                     >
                       View Recipe
                     </button>
