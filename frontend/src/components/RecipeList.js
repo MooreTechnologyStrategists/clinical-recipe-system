@@ -75,13 +75,13 @@ const RecipeList = ({ apiUrl, onViewRecipe }) => {
           <button
             onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
             data-testid="toggle-favorites-btn"
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
               showFavoritesOnly
-                ? 'bg-yellow-500 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-blue-600 text-white border-blue-700'
+                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
             }`}
           >
-            {showFavoritesOnly ? '⭐ Favorites Only' : '📖 All Recipes'}
+            {showFavoritesOnly ? 'Favorites Only' : 'All Recipes'}
           </button>
         </div>
 
