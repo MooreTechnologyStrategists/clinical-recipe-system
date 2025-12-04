@@ -150,8 +150,8 @@ const MyPantry = ({ apiUrl, pantryItems, setPantryItems }) => {
 
       {/* Add Ingredients Section */}
       <div className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4" data-testid="add-ingredients-title">
-          ➕ Add Ingredients
+        <h2 className="text-2xl font-semibold text-gray-900 mb-4" data-testid="add-ingredients-title">
+          Add Ingredients
         </h2>
 
         {/* Search and Filter */}
