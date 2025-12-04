@@ -50,21 +50,21 @@ const GenerateRecipe = ({ apiUrl, pantryItems, healthProfile, onRecipeGenerated 
   };
 
   const dietaryOptions = [
-    { value: 'vegan', label: '🌱 Vegan', color: 'green' },
-    { value: 'vegetarian', label: '🧀 Vegetarian', color: 'green' },
-    { value: 'plant-based', label: '🥗 Plant-Based', color: 'green' },
-    { value: 'pescatarian', label: '🐟 Pescatarian', color: 'blue' },
-    { value: 'flexitarian', label: '🍝 Flexitarian', color: 'yellow' },
-    { value: 'carnivorous', label: '🥩 Carnivorous', color: 'red' },
-    { value: 'clean-eating', label: '✨ Clean Eating', color: 'purple' },
+    { value: 'vegan', label: 'Vegan' },
+    { value: 'vegetarian', label: 'Vegetarian' },
+    { value: 'plant-based', label: 'Plant-Based' },
+    { value: 'pescatarian', label: 'Pescatarian' },
+    { value: 'flexitarian', label: 'Flexitarian' },
+    { value: 'carnivorous', label: 'Carnivorous' },
+    { value: 'clean-eating', label: 'Clean Eating' },
   ];
 
   const mealTypeOptions = [
-    { value: 'breakfast', label: '🍳 Breakfast' },
-    { value: 'lunch', label: '🥗 Lunch' },
-    { value: 'dinner', label: '🍝 Dinner' },
-    { value: 'snack', label: '🍿 Snack' },
-    { value: 'dessert', label: '🍰 Dessert' },
+    { value: 'breakfast', label: 'Breakfast' },
+    { value: 'lunch', label: 'Lunch' },
+    { value: 'dinner', label: 'Dinner' },
+    { value: 'snack', label: 'Snack' },
+    { value: 'dessert', label: 'Dessert' },
   ];
 
   return (
