@@ -87,9 +87,8 @@ const GenerateRecipe = ({ apiUrl, pantryItems, healthProfile, onRecipeGenerated 
 
         {pantryItems.length === 0 ? (
           <div className="text-center py-12 text-gray-500" data-testid="no-pantry-items-message">
-            <div className="text-6xl mb-4">🤷</div>
-            <p className="text-lg font-medium">No ingredients in your pantry!</p>
-            <p className="text-sm mt-2">Add some ingredients first to generate recipes.</p>
+            <p className="text-lg font-medium">No ingredients in inventory</p>
+            <p className="text-sm mt-2">Add ingredients to your inventory first to generate recipes.</p>
           </div>
         ) : (
           <div className="space-y-6">
