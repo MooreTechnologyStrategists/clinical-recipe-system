@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const GenerateRecipe = ({ apiUrl, pantryItems, onRecipeGenerated }) => {
+const GenerateRecipe = ({ apiUrl, pantryItems, healthProfile, onRecipeGenerated }) => {
   const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [dietaryPreference, setDietaryPreference] = useState('plant-based');
   const [mealType, setMealType] = useState('lunch');
