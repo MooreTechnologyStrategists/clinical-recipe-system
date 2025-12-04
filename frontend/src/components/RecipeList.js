@@ -67,10 +67,10 @@ const RecipeList = ({ apiUrl, onViewRecipe }) => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900" data-testid="saved-recipes-title">
-            📖 Saved Recipes ({recipes.length})
+          <h2 className="text-2xl font-semibold text-gray-900" data-testid="saved-recipes-title">
+            Saved Recipes ({recipes.length})
           </h2>
           <button
             onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
