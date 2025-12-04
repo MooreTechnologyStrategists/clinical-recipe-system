@@ -70,9 +70,20 @@ const GenerateRecipe = ({ apiUrl, pantryItems, healthProfile, onRecipeGenerated 
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6" data-testid="generate-recipe-title">
-          ✨ Generate Recipe
+        <h2 className="text-2xl font-semibold text-gray-900 mb-6" data-testid="generate-recipe-title">
+          Generate Recipe
         </h2>
+        
+        {healthProfile && healthProfile.conditions && healthProfile.conditions.length > 0 && (
+          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <p className="text-sm text-blue-900 font-medium mb-2">
+              Health Profile Active
+            </p>
+            <p className="text-sm text-blue-800">
+              Recipes will be optimized for: {healthProfile.conditions.join(', ')}
+            </p>
+          </div>
+        )}
 
         {pantryItems.length === 0 ? (
           <div className="text-center py-12 text-gray-500" data-testid="no-pantry-items-message">
