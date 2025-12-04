@@ -121,9 +121,8 @@ const MyPantry = ({ apiUrl, pantryItems, setPantryItems }) => {
 
         {pantryItems.length === 0 ? (
           <div className="text-center py-12 text-gray-500" data-testid="empty-pantry-message">
-            <div className="text-6xl mb-4">🤷</div>
-            <p className="text-lg">Your pantry is empty!</p>
-            <p className="text-sm mt-2">Add ingredients below to get started.</p>
+            <p className="text-lg font-medium">No ingredients in inventory</p>
+            <p className="text-sm mt-2">Add ingredients below to begin generating recipes.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3" data-testid="pantry-items-grid">
