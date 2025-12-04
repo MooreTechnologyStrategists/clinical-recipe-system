@@ -86,7 +86,16 @@ const RecipeList = ({ apiUrl, onViewRecipe }) => {
         </div>
 
         {recipes.length === 0 ? (
-          <div className=\"text-center py-12 text-gray-500\" data-testid=\"no-recipes-message\">\n            <p className=\"text-lg font-medium\">\n              {showFavoritesOnly ? 'No favorite recipes' : 'No saved recipes'}\n            </p>\n            <p className=\"text-sm mt-2\">\n              {showFavoritesOnly \n                ? 'Mark recipes as favorites to see them here.' \n                : 'Generate recipes to add them to your collection.'}\n            </p>\n          </div>
+          <div className="text-center py-12 text-gray-500" data-testid="no-recipes-message">
+            <p className="text-lg font-medium">
+              {showFavoritesOnly ? 'No favorite recipes' : 'No saved recipes'}
+            </p>
+            <p className="text-sm mt-2">
+              {showFavoritesOnly 
+                ? 'Mark recipes as favorites to see them here.' 
+                : 'Generate recipes to add them to your collection.'}
+            </p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-testid="recipes-grid">
             {recipes.map((recipe) => (
