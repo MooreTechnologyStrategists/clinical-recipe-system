@@ -37,6 +37,7 @@ const GenerateRecipe = ({ apiUrl, pantryItems, healthProfile, onRecipeGenerated 
         dietary_preference: dietaryPreference,
         meal_type: mealType,
         servings: servings,
+        health_profile_id: healthProfile?.id,
       });
 
       onRecipeGenerated(response.data);
