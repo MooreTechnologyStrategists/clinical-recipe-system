@@ -21,8 +21,8 @@ body {
 }
 
 .recipe-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .ingredient-tag {
@@ -30,7 +30,7 @@ body {
 }
 
 .ingredient-tag:hover {
-  transform: scale(1.05);
+  transform: scale(1.02);
 }
 
 .animate-fade-in {
@@ -50,7 +50,7 @@ body {
 
 .loader {
   border: 3px solid #f3f3f3;
-  border-top: 3px solid #10b981;
+  border-top: 3px solid #2563eb;
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -60,4 +60,28 @@ body {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.health-warning {
+  border-left: 4px solid;
+}
+
+.health-warning.high {
+  border-color: #dc2626;
+  background-color: #fef2f2;
+}
+
+.health-warning.moderate {
+  border-color: #f59e0b;
+  background-color: #fffbeb;
+}
+
+.health-warning.low {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+}
+
+.benefit-card {
+  border-left: 4px solid #10b981;
+  background-color: #f0fdf4;
 }
