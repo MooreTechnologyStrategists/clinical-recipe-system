@@ -254,16 +254,32 @@ const HealthProfile = ({ apiUrl, healthProfile, setHealthProfile }) => {
           </div>
         </div>
 
-        {/* Save Button */}
-        <div className="flex justify-end pt-4 border-t border-gray-200">
-          <button
-            onClick={saveProfile}
-            disabled={loading}
-            data-testid="save-health-profile-btn"
-            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? 'Saving...' : 'Save Health Profile'}
-          </button>
+        {/* Save Button and Next Step */}
+        <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+          <div>
+            {saved && (
+              <span className="text-green-600 font-medium">✓ Profile saved successfully!</span>
+            )}
+          </div>
+          <div className="flex space-x-3">
+            <button
+              onClick={saveProfile}
+              disabled={loading}
+              data-testid="save-health-profile-btn"
+              className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Saving...' : 'Save Health Profile'}
+            </button>
+            {saved && (
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('navigateToPantry'))}
+                data-testid="next-to-pantry-btn"
+                className="px-8 py-3 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-medium rounded-lg transition-colors animate-pulse"
+              >
+                Next: Add Ingredients →
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
