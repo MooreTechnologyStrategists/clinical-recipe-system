@@ -17,6 +17,7 @@ function App() {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [pantryItems, setPantryItems] = useState([]);
   const [healthProfile, setHealthProfile] = useState(null);
+  const [recipeListKey, setRecipeListKey] = useState(0);
 
   useEffect(() => {
     // Check if user wants to skip landing page
