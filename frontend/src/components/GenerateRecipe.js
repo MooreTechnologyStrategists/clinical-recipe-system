@@ -40,7 +40,13 @@ const GenerateRecipe = ({ apiUrl, pantryItems, healthProfile, onRecipeGenerated 
         health_profile_id: healthProfile?.id,
       });
 
+      // Recipe is automatically saved to database by backend
       onRecipeGenerated(response.data);
+      
+      // Show success message briefly
+      setTimeout(() => {
+        alert('Recipe generated and saved successfully! You can find it in Saved Recipes.');
+      }, 500);
     } catch (error) {
       console.error('Error generating recipe:', error);
       setError(error.response?.data?.detail || 'Failed to generate recipe. Please try again.');
