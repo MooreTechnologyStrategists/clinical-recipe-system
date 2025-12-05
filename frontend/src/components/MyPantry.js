@@ -191,6 +191,27 @@ const MyPantry = ({ apiUrl, pantryItems, setPantryItems }) => {
         )}
       </div>
 
+      {/* Quick Action: Generate Recipe */}
+      {pantryItems.length > 0 && (
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow-lg p-6 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-semibold mb-2">Ready to Create Recipes?</h3>
+              <p className="text-blue-100 text-sm">
+                You have {pantryItems.length} ingredient{pantryItems.length !== 1 ? 's' : ''} in your inventory. Generate personalized recipes now!
+              </p>
+            </div>
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('navigateToGenerate'))}
+              data-testid="quick-generate-btn"
+              className="px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors shadow-lg"
+            >
+              Generate Recipe →
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Add Ingredients Section */}
       <div className="bg-white rounded-lg shadow-lg p-6">
         <div className="flex items-center justify-between mb-4">
