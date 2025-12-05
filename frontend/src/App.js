@@ -30,10 +30,18 @@ function App() {
       setActiveTab('generate');
     };
 
+    const handleNavigateToPantry = () => {
+      setActiveTab('pantry');
+      // Smooth scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
     window.addEventListener('navigateToGenerate', handleNavigateToGenerate);
+    window.addEventListener('navigateToPantry', handleNavigateToPantry);
     
     return () => {
       window.removeEventListener('navigateToGenerate', handleNavigateToGenerate);
+      window.removeEventListener('navigateToPantry', handleNavigateToPantry);
     };
   }, []);
 
