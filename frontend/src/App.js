@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '@/App.css';
 import axios from 'axios';
 import MyPantry from '@/components/MyPantry';
@@ -6,15 +6,25 @@ import GenerateRecipe from '@/components/GenerateRecipe';
 import RecipeList from '@/components/RecipeList';
 import RecipeDetail from '@/components/RecipeDetail';
 import HealthProfile from '@/components/HealthProfile';
+import LandingPage from '@/components/LandingPage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 function App() {
-  const [activeTab, setActiveTab] = useState('pantry');
+  const [showLanding, setShowLanding] = useState(true);
+  const [activeTab, setActiveTab] = useState('health-profile');
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [pantryItems, setPantryItems] = useState([]);
   const [healthProfile, setHealthProfile] = useState(null);
+
+  useEffect(() => {
+    // Check if user has visited before
+    const hasVisited = localStorage.getItem('hasVisitedClinicalRecipes');
+    if (hasVisited) {
+      setShowLanding(false);
+    }
+  }, []);
 
   const handleViewRecipe = (recipe) => {
     setSelectedRecipe(recipe);
