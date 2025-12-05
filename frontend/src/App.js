@@ -24,6 +24,17 @@ function App() {
     if (hasVisited) {
       setShowLanding(false);
     }
+
+    // Listen for navigation events from child components
+    const handleNavigateToGenerate = () => {
+      setActiveTab('generate');
+    };
+
+    window.addEventListener('navigateToGenerate', handleNavigateToGenerate);
+    
+    return () => {
+      window.removeEventListener('navigateToGenerate', handleNavigateToGenerate);
+    };
   }, []);
 
   const handleViewRecipe = (recipe) => {
