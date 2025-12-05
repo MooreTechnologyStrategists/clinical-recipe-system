@@ -44,7 +44,16 @@ const HealthProfile = ({ apiUrl, healthProfile, setHealthProfile }) => {
         health_goals: healthGoals,
       });
       
-      setHealthProfile(response.data);
+      // Update local state to match saved profile
+      const savedProfile = response.data;
+      setConditions(savedProfile.conditions || []);
+      setAllergies(savedProfile.allergies || []);
+      setDietaryRestrictions(savedProfile.dietary_restrictions || []);
+      setAgeRange(savedProfile.age_range || '');
+      setActivityLevel(savedProfile.activity_level || '');
+      setHealthGoals(savedProfile.health_goals || []);
+      
+      setHealthProfile(savedProfile);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (error) {
