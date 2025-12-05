@@ -29,6 +29,8 @@ function App() {
     // Listen for navigation events from child components
     const handleNavigateToGenerate = () => {
       setActiveTab('generate');
+      // Smooth scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const handleNavigateToPantry = () => {
