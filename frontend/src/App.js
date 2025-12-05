@@ -54,6 +54,17 @@ function App() {
   const handleBackToList = () => {
     setSelectedRecipe(null);
     setActiveTab('recipes');
+    // Force recipe list to refresh
+    setRecipeListKey(prev => prev + 1);
+  };
+
+  const handleFavoriteUpdate = (recipeId, isFavorite) => {
+    // Update the selected recipe state
+    if (selectedRecipe && selectedRecipe.id === recipeId) {
+      setSelectedRecipe({...selectedRecipe, is_favorite: isFavorite});
+    }
+    // Force recipe list to refresh when we go back
+    setRecipeListKey(prev => prev + 1);
   };
 
   const handleGetStarted = () => {
