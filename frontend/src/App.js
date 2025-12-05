@@ -170,6 +170,7 @@ function App() {
         )}
         {activeTab === 'recipes' && (
           <RecipeList
+            key={recipeListKey}
             apiUrl={API}
             onViewRecipe={handleViewRecipe}
           />
@@ -179,6 +180,7 @@ function App() {
             apiUrl={API}
             recipe={selectedRecipe}
             onBack={handleBackToList}
+            onFavoriteUpdate={handleFavoriteUpdate}
           />
         )}
       </main>
