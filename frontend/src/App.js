@@ -36,6 +36,15 @@ function App() {
     setActiveTab('recipes');
   };
 
+  const handleGetStarted = () => {
+    localStorage.setItem('hasVisitedClinicalRecipes', 'true');
+    setShowLanding(false);
+  };
+
+  if (showLanding) {
+    return <LandingPage onGetStarted={handleGetStarted} />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
