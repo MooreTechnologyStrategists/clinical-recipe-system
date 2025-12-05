@@ -215,12 +215,12 @@ Return the recipe in this EXACT JSON format (no markdown, just pure JSON):
 Provide accurate, evidence-based nutritional information and health guidance."""
 
     try:
-        # Initialize LLM chat
+        # Initialize LLM chat with faster model
         chat = LlmChat(
             api_key=api_key,
             session_id=f"recipe-gen-{uuid.uuid4()}",
             system_message="You are a clinical nutritionist and expert chef specializing in evidence-based nutritional guidance and therapeutic diets."
-        ).with_model("openai", "gpt-5.1")
+        ).with_model("openai", "gpt-4o")
         
         # Send message
         user_message = UserMessage(text=prompt)
