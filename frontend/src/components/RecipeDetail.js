@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const RecipeDetail = ({ apiUrl, recipe, onBack }) => {
+const RecipeDetail = ({ apiUrl, recipe, onBack, onFavoriteUpdate }) => {
   const [ratings, setRatings] = useState([]);
   const [newRating, setNewRating] = useState(5);
   const [newReview, setNewReview] = useState('');
