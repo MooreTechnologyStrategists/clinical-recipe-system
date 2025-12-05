@@ -430,6 +430,24 @@ async def get_ingredient_categories():
     return {"categories": categories}
 
 
+@api_router.post("/ingredients", response_model=Ingredient)
+async def add_custom_ingredient(ingredient: Ingredient):
+    """Add a custom ingredient to the global database"""
+    # Check if ingredient already exists
+    existing = await db.ingredients.find_one({"name": ingredient.name.lower()}, {"_id": 0})
+    if existing:
+        raise HTTPException(status_code=409, detail="Ingredient already exists")
+    
+    # Create new ingredient
+    ingredient.name = ingredient.name.lower()
+    doc = ingredient.model_dump()
+    
+    await db.ingredients.insert_one(doc)
+    logging.info(f"New ingredient added: {ingredient.name} in category {ingredient.category}")
+    
+    return ingredient
+
+
 # --- Pantry Endpoints ---
 
 @api_router.get("/pantry", response_model=List[PantryItem])
