@@ -206,13 +206,14 @@ const GenerateRecipe = ({ apiUrl, pantryItems, healthProfile, onRecipeGenerated 
               onClick={generateRecipe}
               disabled={loading || selectedIngredients.length === 0}
               data-testid="generate-recipe-btn"
-              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
-                <>
+                <div className="flex flex-col items-center space-y-2">
                   <div className="loader"></div>
-                  <span>Generating Recipe...</span>
-                </>
+                  <span className="text-base">Generating your personalized recipe...</span>
+                  <span className="text-sm text-blue-100">This usually takes 10-15 seconds</span>
+                </div>
               ) : (
                 <span>Generate Recipe</span>
               )}
