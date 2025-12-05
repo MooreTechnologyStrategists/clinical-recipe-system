@@ -30,9 +30,9 @@ const LandingPage = ({ onGetStarted }) => {
             <button
               onClick={onGetStarted}
               data-testid="get-started-btn"
-              className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
             >
-              Get Started Free
+              🚀 Get Started Free
             </button>
             <div className="text-sm text-gray-600">
               <span className="font-semibold text-green-600">FREE</span> introductory access, then only $0.99/month
