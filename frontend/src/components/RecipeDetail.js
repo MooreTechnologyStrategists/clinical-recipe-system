@@ -6,6 +6,7 @@ const RecipeDetail = ({ apiUrl, recipe, onBack }) => {
   const [newRating, setNewRating] = useState(5);
   const [newReview, setNewReview] = useState('');
   const [isFavorite, setIsFavorite] = useState(recipe.is_favorite);
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     fetchRatings();
