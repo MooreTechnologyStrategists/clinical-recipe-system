@@ -96,13 +96,18 @@ const RecipeDetail = ({ apiUrl, recipe, onBack }) => {
             </h1>
             <p className="text-lg text-gray-600">{recipe.description}</p>
           </div>
-          <button
-            onClick={toggleFavorite}
-            data-testid="favorite-toggle-btn"
-            className="text-5xl hover:scale-110 transition-transform ml-4"
-          >
-            {isFavorite ? '⭐' : '☆'}
-          </button>
+          <div className="flex flex-col items-end space-y-2 ml-4">
+            <button
+              onClick={toggleFavorite}
+              data-testid="favorite-toggle-btn"
+              className="text-5xl hover:scale-110 transition-transform"
+            >
+              {isFavorite ? '⭐' : '☆'}
+            </button>
+            {saved && (
+              <span className="text-sm text-green-600 font-medium">Saved!</span>
+            )}
+          </div>
         </div>
 
         {/* Tags and Meta Info */}
