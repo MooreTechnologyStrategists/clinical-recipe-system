@@ -74,10 +74,14 @@ const MyPantry = ({ apiUrl, pantryItems, setPantryItems }) => {
     if (window.confirm('Are you sure you want to clear your entire inventory?')) {
       try {
         await axios.delete(`${apiUrl}/pantry`);
+        // Force immediate UI update
         setPantryItems([]);
+        // Also fetch to confirm
+        await fetchPantryItems();
+        alert('Inventory cleared successfully!');
       } catch (error) {
         console.error('Error clearing pantry:', error);
-        alert('Failed to clear pantry');
+        alert('Failed to clear pantry: ' + (error.response?.data?.detail || error.message));
       }
     }
   };
