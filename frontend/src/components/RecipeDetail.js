@@ -43,10 +43,16 @@ const RecipeDetail = ({ apiUrl, recipe, onBack, onFavoriteUpdate }) => {
 
   const toggleFavorite = async () => {
     try {
-      await axios.patch(`${apiUrl}/recipes/${recipe.id}/favorite?is_favorite=${!isFavorite}`);
-      setIsFavorite(!isFavorite);
+      const newStatus = !isFavorite;
+      await axios.patch(`${apiUrl}/recipes/${recipe.id}/favorite?is_favorite=${newStatus}`);
+      setIsFavorite(newStatus);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
+      
+      // Notify parent component to update the list
+      if (onFavoriteUpdate) {
+        onFavoriteUpdate(recipe.id, newStatus);
+      }
     } catch (error) {
       console.error('Error toggling favorite:', error);
     }
