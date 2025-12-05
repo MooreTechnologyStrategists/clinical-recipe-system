@@ -19,9 +19,9 @@ function App() {
   const [healthProfile, setHealthProfile] = useState(null);
 
   useEffect(() => {
-    // Check if user has visited before
-    const hasVisited = localStorage.getItem('hasVisitedClinicalRecipes');
-    if (hasVisited) {
+    // Check if user wants to skip landing page
+    const skipLanding = sessionStorage.getItem('skipLandingPage');
+    if (skipLanding === 'true') {
       setShowLanding(false);
     }
 
