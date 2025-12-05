@@ -48,7 +48,7 @@ function App() {
   };
 
   const handleGetStarted = () => {
-    localStorage.setItem('hasVisitedClinicalRecipes', 'true');
+    sessionStorage.setItem('skipLandingPage', 'true');
     setShowLanding(false);
   };
 
