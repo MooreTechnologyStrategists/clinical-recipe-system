@@ -45,6 +45,8 @@ const RecipeDetail = ({ apiUrl, recipe, onBack }) => {
     try {
       await axios.patch(`${apiUrl}/recipes/${recipe.id}/favorite?is_favorite=${!isFavorite}`);
       setIsFavorite(!isFavorite);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
     } catch (error) {
       console.error('Error toggling favorite:', error);
     }
