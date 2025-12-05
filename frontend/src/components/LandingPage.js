@@ -2,7 +2,7 @@ import React from 'react';
 
 const LandingPage = ({ onGetStarted }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 relative">
       {/* Skip Button - Top Right */}
       <div className="absolute top-4 right-4">
         <button
