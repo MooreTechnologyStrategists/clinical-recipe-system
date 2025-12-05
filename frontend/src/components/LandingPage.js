@@ -20,10 +20,10 @@ const LandingPage = ({ onGetStarted }) => {
             Your Personal Clinical Nutritionist 🏥
           </h1>
           <p className="text-xl md:text-2xl text-gray-600 mb-4 max-w-4xl mx-auto">
-            Evidence-based recipe recommendations tailored to your unique health conditions
+            Evidence-based recipe recommendations tailored to your unique health conditions 💚
           </p>
           <p className="text-lg text-gray-500 mb-8 max-w-3xl mx-auto">
-            Finally, a nutrition system that understands hypertension, diabetes, kidney disease, and more—delivering medically-sound recipes you can trust.
+            Finally, a nutrition system that understands hypertension, diabetes, kidney disease, and more—delivering medically-sound recipes you can trust. ✨
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
