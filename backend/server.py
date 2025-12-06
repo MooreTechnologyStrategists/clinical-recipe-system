@@ -34,7 +34,8 @@ class Ingredient(BaseModel):
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
-    category: str
+    category: str  # vegetables, fruits, grains, proteins, dairy, spices, condiments, etc.
+    image_url: Optional[str] = None  # URL to ingredient image
     
 class PantryItem(BaseModel):
     model_config = ConfigDict(extra="ignore")
