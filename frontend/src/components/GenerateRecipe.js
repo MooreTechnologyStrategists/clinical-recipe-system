@@ -38,6 +38,8 @@ const GenerateRecipe = ({ apiUrl, pantryItems, healthProfile, onRecipeGenerated 
         pantry_items: selectedIngredients,
         dietary_preference: dietaryPreference,
         meal_type: mealType,
+        dish_type: dishType || undefined,  // NEW
+        diet_type: dietType || undefined,  // NEW
         servings: servings,
         health_profile_id: healthProfile?.id,
       });
