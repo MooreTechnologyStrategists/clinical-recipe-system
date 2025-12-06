@@ -115,6 +115,29 @@ class RecipeRating(BaseModel):
 
 # ============= Helper Functions =============
 
+async def fetch_unsplash_image(query: str) -> Optional[str]:
+    """Fetch a random image from Unsplash for the given query"""
+    try:
+        # Using Unsplash Source API (no API key needed for basic usage)
+        # Format: https://source.unsplash.com/800x600/?{query}
+        # This returns a redirect to a random image matching the query
+        base_url = "https://source.unsplash.com/800x600/"
+        image_url = f"{base_url}?{query.replace(' ', ',')}"
+        
+        # Verify the URL works by making a HEAD request
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.head(image_url, follow_redirects=True)
+            if response.status_code == 200:
+                # Return the final URL after redirect
+                return str(response.url)
+        
+        return image_url  # Return anyway, it should work
+    except Exception as e:
+        logging.error(f"Error fetching Unsplash image for '{query}': {str(e)}")
+        # Return a default food placeholder
+        return "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80"
+
+
 async def generate_recipe_with_ai(pantry_items: List[str], dietary_preference: str, meal_type: str, servings: int, health_profile: Optional[HealthProfile] = None) -> dict:
     """Generate a recipe using OpenAI GPT-5.1 with health considerations"""
     
