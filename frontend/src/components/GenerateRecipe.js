@@ -196,6 +196,52 @@ const GenerateRecipe = ({ apiUrl, pantryItems, healthProfile, onRecipeGenerated 
               </div>
             </div>
 
+            {/* NEW: Dish Type */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Dish Type (Optional)
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3" data-testid="dish-type-grid">
+                {dishTypeOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => setDishType(option.value)}
+                    data-testid={`dish-type-${option.value}-btn`}
+                    className={`p-3 rounded-lg text-sm font-medium transition-all ${
+                      dishType === option.value
+                        ? 'bg-purple-600 text-white border-2 border-purple-700'
+                        : 'bg-gray-100 text-gray-700 border-2 border-gray-300 hover:bg-gray-200'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* NEW: Diet Type */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Specific Diet (Optional)
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3" data-testid="diet-type-grid">
+                {dietTypeOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => setDietType(option.value)}
+                    data-testid={`diet-type-${option.value}-btn`}
+                    className={`p-3 rounded-lg text-sm font-medium transition-all ${
+                      dietType === option.value
+                        ? 'bg-green-600 text-white border-2 border-green-700'
+                        : 'bg-gray-100 text-gray-700 border-2 border-gray-300 hover:bg-gray-200'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Servings */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
