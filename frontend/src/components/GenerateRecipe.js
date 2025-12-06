@@ -77,6 +77,30 @@ const GenerateRecipe = ({ apiUrl, pantryItems, healthProfile, onRecipeGenerated 
     { value: 'dessert', label: 'Dessert' },
   ];
 
+  // NEW: Dish Type Options
+  const dishTypeOptions = [
+    { value: '', label: 'Any Type' },
+    { value: 'hot', label: '🔥 Hot Dish' },
+    { value: 'cold', label: '🥗 Cold Dish' },
+    { value: 'smoothie', label: '🥤 Smoothie' },
+    { value: 'juicing', label: '🧃 Juicing' },
+  ];
+
+  // NEW: Diet Type Options
+  const dietTypeOptions = [
+    { value: '', label: 'No Specific Diet' },
+    { value: 'keto', label: 'Keto' },
+    { value: 'paleo', label: 'Paleo' },
+    { value: 'vegan', label: 'Vegan' },
+    { value: 'vegetarian', label: 'Vegetarian' },
+    { value: 'mediterranean', label: 'Mediterranean' },
+    { value: 'atkins', label: 'Atkins' },
+    { value: 'gluten-free', label: 'Gluten-Free' },
+    { value: 'dairy-free', label: 'Dairy-Free' },
+    { value: 'low-carb', label: 'Low-Carb' },
+    { value: 'whole30', label: 'Whole30' },
+  ];
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="bg-white rounded-lg shadow-lg p-6">
