@@ -84,6 +84,7 @@ class Recipe(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str
     description: str
+    image_url: Optional[str] = None  # URL to recipe image
     ingredients: List[dict]
     instructions: List[str]
     prep_time: str
