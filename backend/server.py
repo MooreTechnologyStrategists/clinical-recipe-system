@@ -588,10 +588,15 @@ async def generate_recipe(request: RecipeRequest):
         health_profile=health_profile
     )
     
+    # Fetch recipe image based on title and main ingredients
+    recipe_image_query = f"{recipe_data['title']} food dish"
+    recipe_image_url = await fetch_unsplash_image(recipe_image_query)
+    
     # Create Recipe object
     recipe = Recipe(
         title=recipe_data["title"],
         description=recipe_data["description"],
+        image_url=recipe_image_url,
         ingredients=recipe_data["ingredients"],
         instructions=recipe_data["instructions"],
         prep_time=recipe_data["prep_time"],
