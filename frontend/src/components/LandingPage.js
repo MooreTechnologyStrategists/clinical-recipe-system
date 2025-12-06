@@ -27,26 +27,30 @@ const LandingPage = ({ onGetStarted }) => {
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
             Your Personal Clinical Nutritionist 🏥
           </h1>
-          <p className="text-xl md:text-2xl text-gray-600 mb-4 max-w-4xl mx-auto">
+          <p className="text-xl md:text-2xl mb-4 max-w-4xl">
             Evidence-based recipe recommendations tailored to your unique health conditions 💚
           </p>
-          <p className="text-lg text-gray-500 mb-8 max-w-3xl mx-auto">
+          <p className="text-lg mb-8 max-w-3xl">
             Finally, a nutrition system that understands hypertension, diabetes, kidney disease, and more—delivering medically-sound recipes you can trust. ✨
           </p>
           
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row items-start gap-4">
             <button
               onClick={onGetStarted}
               data-testid="get-started-btn"
-              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+              className="px-8 py-4 bg-white text-blue-600 hover:bg-gray-100 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
             >
               🚀 Get Started Free
             </button>
-            <div className="text-sm text-gray-600">
-              <span className="font-semibold text-green-600">FREE</span> introductory access, then only $0.99/month
+            <div className="text-sm">
+              <span className="font-semibold text-green-300">FREE</span> introductory access, then only $0.99/month
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center mb-16">
 
         {/* Problem Statement */}
         <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 mb-16 border border-gray-100">
