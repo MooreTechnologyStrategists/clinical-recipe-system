@@ -13,12 +13,28 @@ const LandingPage = ({ onGetStarted }) => {
         </button>
       </div>
 
-      {/* Hero Section */}
+      {/* Hero Image Section */}
+      <div className="relative h-96 overflow-hidden">
+        <img 
+          src="/hero-clinical-rx.png" 
+          alt="Clinical Food RX - Healthy Foods" 
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent flex items-center">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-4">
+              Clinical Food RX
+            </h1>
+            <p className="text-xl md:text-2xl text-white/90 max-w-2xl">
+              Your Personal Clinical Nutritionist
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Hero Content Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
-            Your Personal Clinical Nutritionist 🏥
-          </h1>
           <p className="text-xl md:text-2xl text-gray-600 mb-4 max-w-4xl mx-auto">
             Evidence-based recipe recommendations tailored to your unique health conditions 💚
           </p>
