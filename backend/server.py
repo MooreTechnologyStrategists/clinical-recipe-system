@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 import uuid
 from datetime import datetime, timezone
-from emergentintegrations.llm.chat import LlmChat, UserMessage
+# Removed emergentintegrations - using direct OpenAI API instead
 import httpx
 
 
@@ -241,16 +241,25 @@ Return the recipe in this EXACT JSON format (no markdown, just pure JSON):
 Provide accurate, evidence-based nutritional information and health guidance."""
 
     try:
-        # Initialize LLM chat with faster model
-        chat = LlmChat(
-            api_key=api_key,
-            session_id=f"recipe-gen-{uuid.uuid4()}",
-            system_message="You are a clinical nutritionist and expert chef specializing in evidence-based nutritional guidance and therapeutic diets."
-        ).with_model("openai", "gpt-4o")
-        
-        # Send message
-        user_message = UserMessage(text=prompt)
-        response = await chat.send_message(user_message)
+        # Use OpenAI API directly
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "https://api.openai.com/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": "gpt-4o",
+                    "messages": [
+                        {"role": "system", "content": "You are a clinical nutritionist and expert chef specializing in evidence-based nutritional guidance and therapeutic diets."},
+                        {"role": "user", "content": prompt}
+                    ]
+                },
+                timeout=60.0
+            )
+            response_data = response.json()
+            response_text = response_data["choices"][0]["message"]["content"]
         
         # Parse the JSON response
         import json

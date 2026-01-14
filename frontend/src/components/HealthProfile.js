@@ -8,6 +8,8 @@ const HealthProfile = ({ apiUrl, healthProfile, setHealthProfile }) => {
   const [ageRange, setAgeRange] = useState('');
   const [activityLevel, setActivityLevel] = useState('');
   const [healthGoals, setHealthGoals] = useState([]);
+  const [medications, setMedications] = useState([]);
+  const [exerciseRoutine, setExerciseRoutine] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -26,6 +28,8 @@ const HealthProfile = ({ apiUrl, healthProfile, setHealthProfile }) => {
       setAgeRange(profile.age_range || '');
       setActivityLevel(profile.activity_level || '');
       setHealthGoals(profile.health_goals || []);
+      setMedications(profile.medications || []);
+      setExerciseRoutine(profile.exercise_routine || []);
       setHealthProfile(profile);
     } catch (error) {
       console.error('Error fetching health profile:', error);
@@ -42,6 +46,8 @@ const HealthProfile = ({ apiUrl, healthProfile, setHealthProfile }) => {
         age_range: ageRange,
         activity_level: activityLevel,
         health_goals: healthGoals,
+        medications,
+        exercise_routine: exerciseRoutine,
       });
       
       // Update local state to match saved profile
@@ -52,6 +58,8 @@ const HealthProfile = ({ apiUrl, healthProfile, setHealthProfile }) => {
       setAgeRange(savedProfile.age_range || '');
       setActivityLevel(savedProfile.activity_level || '');
       setHealthGoals(savedProfile.health_goals || []);
+      setMedications(savedProfile.medications || []);
+      setExerciseRoutine(savedProfile.exercise_routine || []);
       
       setHealthProfile(savedProfile);
       setSaved(true);
@@ -249,6 +257,81 @@ const HealthProfile = ({ apiUrl, healthProfile, setHealthProfile }) => {
                 }`}
               >
                 {goal}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Current Medications */}
+        <div className="mb-8">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Current Medications</h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Select any medications you're currently taking. This helps identify potential drug-nutrient interactions.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3" data-testid="medications-grid">
+            {[
+              { value: 'blood_thinners', label: 'Blood Thinners (Warfarin, Coumadin)' },
+              { value: 'statins', label: 'Statins (Cholesterol medication)' },
+              { value: 'metformin', label: 'Metformin (Diabetes medication)' },
+              { value: 'insulin', label: 'Insulin' },
+              { value: 'blood_pressure_meds', label: 'Blood Pressure Medications' },
+              { value: 'diuretics', label: 'Diuretics (Water pills)' },
+              { value: 'thyroid_medication', label: 'Thyroid Medication (Levothyroxine)' },
+              { value: 'immunosuppressants', label: 'Immunosuppressants' },
+            ].map((med) => (
+              <button
+                key={med.value}
+                onClick={() => toggleArrayItem(medications, setMedications, med.value)}
+                data-testid={`medication-${med.value}-btn`}
+                className={`p-4 rounded-lg text-left text-sm font-medium transition-all border-2 ${
+                  medications.includes(med.value)
+                    ? 'bg-purple-50 border-purple-500 text-purple-900'
+                    : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span>{med.label}</span>
+                  {medications.includes(med.value) && (
+                    <span className="text-purple-600 font-bold">✓</span>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Exercise Routine */}
+        <div className="mb-8">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Exercise Routine</h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Select the types of exercise you regularly do. This helps tailor nutritional recommendations.
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3" data-testid="exercise-grid">
+            {[
+              'Cardio/Running',
+              'Walking',
+              'Strength Training',
+              'Yoga',
+              'Swimming',
+              'Cycling',
+              'HIIT',
+              'Pilates',
+              'Dance',
+              'Sports',
+              'Stretching',
+              'None currently',
+            ].map((exercise) => (
+              <button
+                key={exercise}
+                onClick={() => toggleArrayItem(exerciseRoutine, setExerciseRoutine, exercise)}
+                data-testid={`exercise-${exercise}-btn`}
+                className={`p-3 rounded-lg text-sm font-medium transition-all border-2 ${
+                  exerciseRoutine.includes(exercise)
+                    ? 'bg-teal-50 border-teal-500 text-teal-900'
+                    : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
+                }`}
+              >
+                {exercise}
               </button>
             ))}
           </div>
