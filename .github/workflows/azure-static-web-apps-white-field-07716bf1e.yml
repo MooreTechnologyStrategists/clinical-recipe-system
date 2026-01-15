@@ -35,6 +35,9 @@ jobs:
         working-directory: frontend
         run: yarn build
 
+      - name: Verify build output
+        run: ls -la frontend/dist
+
       - name: Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -44,7 +47,7 @@ jobs:
           action: "upload"
           app_location: "./frontend"
           api_location: ""
-          output_location: "dist"
+          app_artifact_location: "dist"
           skip_app_build: true
 
   close_pull_request_job:
@@ -58,4 +61,3 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WHITE_FIELD_07716BF1E }}
           action: "close"
-          app_location: "./frontend"
