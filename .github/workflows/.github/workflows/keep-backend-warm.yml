@@ -2,25 +2,32 @@ name: Keep Backend Warm
 
 on:
   schedule:
-    # Run every 10 minutes during peak hours (8am-10pm EST)
-    # Format: minute hour day month day-of-week
-    - cron: '*/10 8-22 * * *'  # Every 10 min, 8am-10pm UTC (3am-5pm EST)
-  workflow_dispatch:  # Allows manual trigger
+    # Every 10 minutes from 8am-10pm EST (13:00-03:00 UTC next day)
+    - cron: '*/10 13-23,0-3 * * *'
+  workflow_dispatch:  # Allows manual trigger from GitHub Actions tab
 
 jobs:
   ping-backend:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Ping API Health Endpoint
+      - name: Warm up backend API
         run: |
-          echo "Pinging backend to keep it warm..."
-          curl -f -s -o /dev/null -w "Status: %{http_code}\nTime: %{time_total}s\n" \
-            https://white-field-07716bf1e.5.azurestaticapps.net/api/health || \
-          echo "Warning: Health check failed, but this is expected on first cold start"
+          echo "🔥 Keeping backend warm..."
           
-      - name: Ping Recipe Endpoint
-        run: |
-          echo "Pinging recipes endpoint..."
-          curl -f -s -o /dev/null -w "Status: %{http_code}\nTime: %{time_total}s\n" \
-            https://white-field-07716bf1e.5.azurestaticapps.net/api/recipes || \
-          echo "Recipes endpoint check complete"
+          BASE_URL="https://white-field-07716bf1e.3.azurestaticapps.net"
+          
+          # Ping health endpoint (or any lightweight API endpoint)
+          echo "Checking /api/health..."
+          curl -f -m 30 -s -o /dev/null -w "✅ Health: %{http_code} (%{time_total}s)\n" \
+            "${BASE_URL}/api/health" || echo "⚠️  Health endpoint not found (trying recipes instead)"
+          
+          # Wait a bit for backend to fully wake
+          sleep 5
+          
+          # Ping main recipe endpoint
+          echo "Checking /api/recipes..."
+          curl -f -m 30 -s -o /dev/null -w "✅ Recipes: %{http_code} (%{time_total}s)\n" \
+            "${BASE_URL}/api/recipes" || echo "⚠️  Recipes endpoint check complete"
+          
+          echo "✨ Backend ping complete - should stay warm for ~20 minutes!"
