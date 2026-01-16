@@ -1,0 +1,26 @@
+name: Keep Backend Warm
+
+on:
+  schedule:
+    # Run every 10 minutes during peak hours (8am-10pm EST)
+    # Format: minute hour day month day-of-week
+    - cron: '*/10 8-22 * * *'  # Every 10 min, 8am-10pm UTC (3am-5pm EST)
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  ping-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping API Health Endpoint
+        run: |
+          echo "Pinging backend to keep it warm..."
+          curl -f -s -o /dev/null -w "Status: %{http_code}\nTime: %{time_total}s\n" \
+            https://white-field-07716bf1e.5.azurestaticapps.net/api/health || \
+          echo "Warning: Health check failed, but this is expected on first cold start"
+          
+      - name: Ping Recipe Endpoint
+        run: |
+          echo "Pinging recipes endpoint..."
+          curl -f -s -o /dev/null -w "Status: %{http_code}\nTime: %{time_total}s\n" \
+            https://white-field-07716bf1e.5.azurestaticapps.net/api/recipes || \
+          echo "Recipes endpoint check complete"
