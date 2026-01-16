@@ -37,25 +37,25 @@ jobs:
 
       - name: Verify build output
         run: |
-          echo "📁 Checking frontend/dist directory..."
-          ls -la frontend/dist || echo "❌ dist directory not found!"
+          echo "📁 Checking frontend/build directory..."
+          ls -la frontend/build || echo "❌ build directory not found!"
           echo ""
-          echo "📄 Files in dist:"
-          find frontend/dist -type f 2>/dev/null || echo "❌ No files found in dist!"
+          echo "📄 Files in build:"
+          find frontend/build -type f 2>/dev/null || echo "❌ No files found in build!"
           echo ""
           echo "📊 Checking if index.html exists:"
-          if [ -f frontend/dist/index.html ]; then
+          if [ -f frontend/build/index.html ]; then
             echo "✅ index.html found"
             echo "📝 First 10 lines of index.html:"
-            head -10 frontend/dist/index.html
+            head -10 frontend/build/index.html
           else
             echo "❌ index.html MISSING!"
             echo "🔍 Looking for HTML files anywhere in frontend:"
             find frontend -name "*.html" -type f
           fi
           echo ""
-          echo "📦 Total files in dist:"
-          find frontend/dist -type f 2>/dev/null | wc -l
+          echo "📦 Total files in build:"
+          find frontend/build -type f 2>/dev/null | wc -l
 
       - name: Deploy
         id: builddeploy
@@ -66,7 +66,7 @@ jobs:
           action: "upload"
           app_location: "./frontend"
           api_location: "backend"
-          output_location: "dist"
+          output_location: "build"
           skip_app_build: true
 
   close_pull_request_job:
