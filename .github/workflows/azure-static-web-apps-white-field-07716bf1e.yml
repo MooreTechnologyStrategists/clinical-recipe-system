@@ -38,24 +38,9 @@ jobs:
       - name: Verify build output
         run: |
           echo "📁 Checking frontend/build directory..."
-          ls -la frontend/build || echo "❌ build directory not found!"
-          echo ""
-          echo "📄 Files in build:"
-          find frontend/build -type f 2>/dev/null || echo "❌ No files found in build!"
-          echo ""
-          echo "📊 Checking if index.html exists:"
-          if [ -f frontend/build/index.html ]; then
-            echo "✅ index.html found"
-            echo "📝 First 10 lines of index.html:"
-            head -10 frontend/build/index.html
-          else
-            echo "❌ index.html MISSING!"
-            echo "🔍 Looking for HTML files anywhere in frontend:"
-            find frontend -name "*.html" -type f
-          fi
-          echo ""
-          echo "📦 Total files in build:"
-          find frontend/build -type f 2>/dev/null | wc -l
+          ls -la frontend/build
+          echo "✅ index.html found:"
+          head -5 frontend/build/index.html
 
       - name: Deploy
         id: builddeploy
@@ -65,8 +50,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "./frontend/build"
-          api_location: "backend"
-          output_location: "build"
+          api_location: ""
           skip_app_build: true
 
   close_pull_request_job:
