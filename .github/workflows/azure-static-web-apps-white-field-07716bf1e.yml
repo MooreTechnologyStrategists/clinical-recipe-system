@@ -36,7 +36,26 @@ jobs:
         run: yarn build
 
       - name: Verify build output
-        run: ls -la frontend/dist
+        run: |
+          echo "📁 Checking frontend/dist directory..."
+          ls -la frontend/dist || echo "❌ dist directory not found!"
+          echo ""
+          echo "📄 Files in dist:"
+          find frontend/dist -type f 2>/dev/null || echo "❌ No files found in dist!"
+          echo ""
+          echo "📊 Checking if index.html exists:"
+          if [ -f frontend/dist/index.html ]; then
+            echo "✅ index.html found"
+            echo "📝 First 10 lines of index.html:"
+            head -10 frontend/dist/index.html
+          else
+            echo "❌ index.html MISSING!"
+            echo "🔍 Looking for HTML files anywhere in frontend:"
+            find frontend -name "*.html" -type f
+          fi
+          echo ""
+          echo "📦 Total files in dist:"
+          find frontend/dist -type f 2>/dev/null | wc -l
 
       - name: Deploy
         id: builddeploy
@@ -46,8 +65,8 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "./frontend"
-          api_location: ""
-          app_artifact_location: "dist"
+          api_location: "backend"
+          output_location: "dist"
           skip_app_build: true
 
   close_pull_request_job:
