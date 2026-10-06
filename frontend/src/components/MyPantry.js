@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../recipeApi';
 import { INGREDIENTS_DATABASE, CATEGORIES } from '../data/ingredients';
 
 const MyPantry = ({ apiUrl, pantryItems, setPantryItems }) => {

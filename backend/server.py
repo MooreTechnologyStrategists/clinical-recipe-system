@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi import FastAPI, APIRouter, HTTPException, Header, Depends
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -8,6 +8,8 @@ from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 import uuid
+import hashlib
+import re
 from datetime import datetime, timezone
 # Removed emergentintegrations - using direct OpenAI API instead
 import httpx
@@ -26,6 +28,13 @@ app = FastAPI()
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
+
+
+def current_owner(x_recipe_session: Optional[str] = Header(default=None)) -> str:
+    """Anonymous device token: never expose or adopt legacy unowned records."""
+    if not x_recipe_session or not re.fullmatch(r"[0-9a-f]{64}", x_recipe_session):
+        raise HTTPException(status_code=401, detail="A private recipe session is required")
+    return hashlib.sha256(x_recipe_session.encode("ascii")).hexdigest()
 
 
 # ============= Models =============
@@ -147,7 +156,7 @@ async def generate_recipe_with_ai(pantry_items: List[str], dietary_preference: s
     
     # Build health context
     health_context = ""
-    if health_profile and health_profile.conditions:
+    if health_profile:
         conditions_str = ", ".join(health_profile.conditions)
         health_context = f"""
 
@@ -263,7 +272,8 @@ Provide accurate, evidence-based nutritional information and health guidance."""
         
         # Parse the JSON response
         import json
-        response_text = response.strip()
+        response.raise_for_status()
+        response_text = response_text.strip()
         if response_text.startswith("```"):
             response_text = response_text.split("```")[1]
             if response_text.startswith("json"):
@@ -486,9 +496,9 @@ async def add_custom_ingredient(ingredient: Ingredient):
 # --- Pantry Endpoints ---
 
 @api_router.get("/pantry", response_model=List[PantryItem])
-async def get_pantry():
+async def get_pantry(owner: str = Depends(current_owner)):
     """Get all items in user's pantry"""
-    items = await db.pantry.find({}, {"_id": 0}).to_list(1000)
+    items = await db.pantry.find({"owner": owner}, {"_id": 0, "owner": 0}).to_list(1000)
     
     for item in items:
         if isinstance(item.get('added_date'), str):
@@ -498,37 +508,38 @@ async def get_pantry():
 
 
 @api_router.post("/pantry", response_model=PantryItem)
-async def add_to_pantry(item: PantryItem):
+async def add_to_pantry(item: PantryItem, owner: str = Depends(current_owner)):
     """Add an item to pantry"""
     doc = item.model_dump()
     doc['added_date'] = doc['added_date'].isoformat()
     
+    doc["owner"] = owner
     await db.pantry.insert_one(doc)
     return item
 
 
 @api_router.delete("/pantry/{item_id}")
-async def remove_from_pantry(item_id: str):
+async def remove_from_pantry(item_id: str, owner: str = Depends(current_owner)):
     """Remove an item from pantry"""
-    result = await db.pantry.delete_one({"id": item_id})
+    result = await db.pantry.delete_one({"id": item_id, "owner": owner})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Item not found")
     return {"message": "Item removed from pantry"}
 
 
 @api_router.delete("/pantry")
-async def clear_pantry():
+async def clear_pantry(owner: str = Depends(current_owner)):
     """Clear all items from pantry"""
-    await db.pantry.delete_many({})
+    await db.pantry.delete_many({"owner": owner})
     return {"message": "Pantry cleared"}
 
 
 # --- Health Profile Endpoints ---
 
 @api_router.get("/health-profile", response_model=HealthProfile)
-async def get_health_profile():
+async def get_health_profile(owner: str = Depends(current_owner)):
     """Get user's health profile"""
-    profile = await db.health_profiles.find_one({}, {"_id": 0})
+    profile = await db.health_profiles.find_one({"owner": owner}, {"_id": 0, "owner": 0})
     if not profile:
         # Return empty profile if none exists
         return HealthProfile()
@@ -542,10 +553,9 @@ async def get_health_profile():
 
 
 @api_router.post("/health-profile", response_model=HealthProfile)
-async def create_or_update_health_profile(profile: HealthProfile):
+async def create_or_update_health_profile(profile: HealthProfile, owner: str = Depends(current_owner)):
     """Create or update health profile"""
-    # Delete existing profile
-    await db.health_profiles.delete_many({})
+    # Update only this device’s profile; legacy records remain untouched.
     
     # Create new profile
     profile.updated_date = datetime.now(timezone.utc)
@@ -553,14 +563,15 @@ async def create_or_update_health_profile(profile: HealthProfile):
     doc['created_date'] = doc['created_date'].isoformat()
     doc['updated_date'] = doc['updated_date'].isoformat()
     
-    await db.health_profiles.insert_one(doc)
+    doc["owner"] = owner
+    await db.health_profiles.update_one({"owner": owner}, {"$set": doc}, upsert=True)
     return profile
 
 
 # --- Recipe Generation Endpoints ---
 
 @api_router.post("/recipes/generate", response_model=Recipe)
-async def generate_recipe(request: RecipeRequest):
+async def generate_recipe(request: RecipeRequest, owner: str = Depends(current_owner)):
     """Generate a recipe based on pantry items and preferences"""
     
     if not request.pantry_items:
@@ -571,7 +582,9 @@ async def generate_recipe(request: RecipeRequest):
     # Get health profile if specified
     health_profile = None
     if request.health_profile_id:
-        profile_doc = await db.health_profiles.find_one({"id": request.health_profile_id}, {"_id": 0})
+        profile_doc = await db.health_profiles.find_one({"id": request.health_profile_id, "owner": owner}, {"_id": 0, "owner": 0})
+        if not profile_doc:
+            raise HTTPException(status_code=404, detail="Health profile not found")
         if profile_doc:
             if isinstance(profile_doc.get('created_date'), str):
                 profile_doc['created_date'] = datetime.fromisoformat(profile_doc['created_date'])
@@ -580,7 +593,7 @@ async def generate_recipe(request: RecipeRequest):
             health_profile = HealthProfile(**profile_doc)
     else:
         # Get default health profile
-        profile_doc = await db.health_profiles.find_one({}, {"_id": 0})
+        profile_doc = await db.health_profiles.find_one({"owner": owner}, {"_id": 0, "owner": 0})
         if profile_doc:
             if isinstance(profile_doc.get('created_date'), str):
                 profile_doc['created_date'] = datetime.fromisoformat(profile_doc['created_date'])
@@ -625,19 +638,20 @@ async def generate_recipe(request: RecipeRequest):
     # Save to database
     doc = recipe.model_dump()
     doc['created_date'] = doc['created_date'].isoformat()
+    doc["owner"] = owner
     await db.recipes.insert_one(doc)
     
     return recipe
 
 
 @api_router.get("/recipes", response_model=List[Recipe])
-async def get_all_recipes(favorites_only: bool = False):
+async def get_all_recipes(favorites_only: bool = False, owner: str = Depends(current_owner)):
     """Get all saved recipes"""
-    query = {}
+    query = {"owner": owner}
     if favorites_only:
         query["is_favorite"] = True
     
-    recipes = await db.recipes.find(query, {"_id": 0}).sort("created_date", -1).to_list(100)
+    recipes = await db.recipes.find(query, {"_id": 0, "owner": 0}).sort("created_date", -1).to_list(100)
     
     for recipe in recipes:
         if isinstance(recipe.get('created_date'), str):
@@ -647,9 +661,9 @@ async def get_all_recipes(favorites_only: bool = False):
 
 
 @api_router.get("/recipes/{recipe_id}", response_model=Recipe)
-async def get_recipe(recipe_id: str):
+async def get_recipe(recipe_id: str, owner: str = Depends(current_owner)):
     """Get a specific recipe by ID"""
-    recipe = await db.recipes.find_one({"id": recipe_id}, {"_id": 0})
+    recipe = await db.recipes.find_one({"id": recipe_id, "owner": owner}, {"_id": 0, "owner": 0})
     if not recipe:
         raise HTTPException(status_code=404, detail="Recipe not found")
     
@@ -660,10 +674,10 @@ async def get_recipe(recipe_id: str):
 
 
 @api_router.patch("/recipes/{recipe_id}/favorite")
-async def toggle_favorite(recipe_id: str, is_favorite: bool):
+async def toggle_favorite(recipe_id: str, is_favorite: bool, owner: str = Depends(current_owner)):
     """Toggle favorite status of a recipe"""
     result = await db.recipes.update_one(
-        {"id": recipe_id},
+        {"id": recipe_id, "owner": owner},
         {"$set": {"is_favorite": is_favorite}}
     )
     if result.matched_count == 0:
@@ -672,9 +686,9 @@ async def toggle_favorite(recipe_id: str, is_favorite: bool):
 
 
 @api_router.delete("/recipes/{recipe_id}")
-async def delete_recipe(recipe_id: str):
+async def delete_recipe(recipe_id: str, owner: str = Depends(current_owner)):
     """Delete a recipe"""
-    result = await db.recipes.delete_one({"id": recipe_id})
+    result = await db.recipes.delete_one({"id": recipe_id, "owner": owner})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Recipe not found")
     return {"message": "Recipe deleted"}
@@ -683,20 +697,23 @@ async def delete_recipe(recipe_id: str):
 # --- Recipe Rating Endpoints ---
 
 @api_router.post("/recipes/{recipe_id}/ratings", response_model=RecipeRating)
-async def add_recipe_rating(recipe_id: str, rating: RecipeRating):
+async def add_recipe_rating(recipe_id: str, rating: RecipeRating, owner: str = Depends(current_owner)):
     """Add a rating/review to a recipe"""
+    if not await db.recipes.find_one({"id": recipe_id, "owner": owner}, {"_id": 0, "owner": 0}):
+        raise HTTPException(status_code=404, detail="Recipe not found")
     rating.recipe_id = recipe_id
     doc = rating.model_dump()
     doc['created_date'] = doc['created_date'].isoformat()
     
+    doc["owner"] = owner
     await db.recipe_ratings.insert_one(doc)
     return rating
 
 
 @api_router.get("/recipes/{recipe_id}/ratings", response_model=List[RecipeRating])
-async def get_recipe_ratings(recipe_id: str):
+async def get_recipe_ratings(recipe_id: str, owner: str = Depends(current_owner)):
     """Get all ratings for a recipe"""
-    ratings = await db.recipe_ratings.find({"recipe_id": recipe_id}, {"_id": 0}).to_list(100)
+    ratings = await db.recipe_ratings.find({"recipe_id": recipe_id, "owner": owner}, {"_id": 0, "owner": 0}).to_list(100)
     
     for rating in ratings:
         if isinstance(rating.get('created_date'), str):
@@ -711,7 +728,7 @@ app.include_router(api_router)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=list(dict.fromkeys(['https://clinical-recipe-system.vercel.app', 'https://askdogood.com', 'https://www.askdogood.com'] + [origin.strip() for origin in os.environ.get('CORS_ORIGINS', '').split(',') if origin.strip() and origin.strip() != '*'])),
     allow_methods=["*"],
     allow_headers=["*"],
 )

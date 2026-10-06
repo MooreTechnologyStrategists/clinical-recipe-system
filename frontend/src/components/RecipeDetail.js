@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../recipeApi';
 
 const RecipeDetail = ({ apiUrl, recipe, onBack, onFavoriteUpdate }) => {
   const [ratings, setRatings] = useState([]);

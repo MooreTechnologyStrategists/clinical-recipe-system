@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../recipeApi';
 
 const HealthProfile = ({ apiUrl, healthProfile, setHealthProfile }) => {
   const [conditions, setConditions] = useState([]);

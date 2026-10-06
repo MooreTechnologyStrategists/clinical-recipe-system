@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../recipeApi';
 
 const GenerateRecipe = ({ apiUrl, pantryItems, healthProfile, onRecipeGenerated }) => {
   const [selectedIngredients, setSelectedIngredients] = useState([]);
